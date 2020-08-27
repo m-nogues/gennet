@@ -1,4 +1,4 @@
-class command:
+class Command:
 
     # Python native methods
     def __init__(self, name):
@@ -6,7 +6,7 @@ class command:
 
     def __str__(self):
         ret = 'name:\t' + self.__name + '\nparameters:' + \
-            ''.join(['\n\t' + p for p in self.__parameters])
+              ''.join(['\n\t' + p for p in self.__parameters])
         return ret
 
     # Attributes

@@ -1,12 +1,12 @@
-class attack:
+class Attack:
 
     # Python native methods
     def __init__(self, service):
         self.__service, self.__commands = service, set()
 
     def __str__(self):
-        ret = 'service:\n'+''.join(['\n\t\t' +
-                                    line for line in str(self.__service).split('\n')])+'\ncommands:'
+        ret = 'service:\n' + ''.join(['\n\t\t' +
+                                      line for line in str(self.__service).split('\n')]) + '\ncommands:'
         i = 0
         for command in self.__commands:
             ret += '\n\tcommand_' + str(i) + ':' + ''.join(['\n\t\t' +
@@ -22,13 +22,13 @@ class attack:
     @property
     def commands(self): return self.__commands
 
-    def add_command(self,command):
+    def add_command(self, command):
         try:
             self.__commands.add(command)
         except:
             pass
-    
-    def del_command(self,command):
+
+    def del_command(self, command):
         try:
             self.__commands.remove(command)
         except:

@@ -3,7 +3,7 @@ import random
 import pandas as pd
 
 from modules.generators import action_generator, crontab_generator
-from modules.model import hacker
+from modules.model import attacker
 
 
 def rand_mac():
@@ -68,7 +68,7 @@ def prepare_hacker(conf, vms):
         hacker -- The generated hacker
     """
     ip, mac = find_ip_and_mac(vms, conf['network']['prefixe'])
-    h = hacker.hacker(ip, mac)
+    h = attacker.Attacker(ip, mac)
 
     for a in conf['hacker']['attacks']:
         h.add_attack(a)

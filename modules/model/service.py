@@ -1,4 +1,4 @@
-class service:
+class Service:
 
     # Python native methods
     def __init__(self, name):

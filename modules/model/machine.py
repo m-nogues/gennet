@@ -1,4 +1,4 @@
-class machine:
+class Machine:
 
     # Python native methods
     def __init__(self, ip, mac):

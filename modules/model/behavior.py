@@ -1,4 +1,4 @@
-class behavior:
+class Behavior:
 
     # Python native methods
     def __init__(self, name, services):

@@ -88,7 +88,7 @@ def gen_vm(vms, number_of_vms, prefixe, services):
     """
     ip, mac = gen_rand_ip_and_mac(vms, number_of_vms, prefixe)
 
-    v = vm.vm(ip, mac, behavior.behavior(ip + '/' + mac, services))
+    v = vm.Vm(ip, mac, behavior.Behavior(ip + '/' + mac, services))
     for s in rand_services(services):
         v.add_service(s)
 

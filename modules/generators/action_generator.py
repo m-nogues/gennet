@@ -80,7 +80,8 @@ def get_random_action(vms, interval, duration, start_date, change_number):
     rand_parameter = format_parameter(
         random.sample(rand_command.parameters, 1)[0], rand_vm)
 
-    return action.action(rand_command.name, get_random_time_in_interval(interval, duration, start_date, change_number), rand_parameter)
+    return action.Action(rand_command.name, get_random_time_in_interval(interval, duration, start_date, change_number),
+                         rand_parameter)
 
 
 def prepare_actions(vms, interval, max_actions, duration, start_date, change_number, index):
@@ -106,8 +107,10 @@ def prepare_actions(vms, interval, max_actions, duration, start_date, change_num
         actions += [get_random_action(vms, interval,
                                       duration, start_date, change_number)]
 
-    actions += [action.action('/usr/local/bin/change_vm', start_date +
-                              duration * change_number, '/vms/vm_' + str(((index + len(vms) + 1) % (len(vms) + 1)) + 1) + ' ' + str(change_number))]
+    actions += [action.Action('/usr/local/bin/change_vm', start_date +
+                              duration * change_number,
+                              '/vms/vm_' + str(((index + len(vms) + 1) % (len(vms) + 1)) + 1) + ' ' + str(
+                                  change_number))]
 
     return actions
 
@@ -126,7 +129,7 @@ def generate(vm, vms, conf, change_number, index):
         list -- The list of generated actions
     """
     duration = (conf['experiment']['end_date'] - conf['experiment']
-                ['start_date']) / conf['network']['number_of_changes']
+    ['start_date']) / conf['network']['number_of_changes']
 
     interval = date_range(conf['experiment']['start_date'] + duration * change_number,
                           conf['experiment']['start_date'] + duration * (change_number + 1))
@@ -134,7 +137,8 @@ def generate(vm, vms, conf, change_number, index):
     vms.remove(vm)
 
     actions = prepare_actions(
-        vms, interval, conf['experiment']['max_actions_per_vm'], duration, conf['experiment']['start_date'], change_number, index)
+        vms, interval, conf['experiment']['max_actions_per_vm'], duration, conf['experiment']['start_date'],
+        change_number, index)
 
     return actions
 
@@ -157,12 +161,12 @@ def hacker(hacker, conf, vms):
     actions = list()
     number_of_actions = random.randint(
         1, conf['experiment']['max_actions_per_vm']) + 1
-    actions += [action.action('/usr/local/bin/change_vm', start_date, '/vms/hacker 0')]
-    
+    actions += [action.Action('/usr/local/bin/change_vm', start_date, '/vms/hacker 0')]
+
     while len(actions) < number_of_actions:
         index = random.randint(0, len(vms) - 1)
         rand_vm = vms[index]
-        change_number = int(index/conf['network']['number_of_vms'])
+        change_number = int(index / conf['network']['number_of_vms'])
         rand_command = random.sample(hacker.attacks, 1)[0]
 
         rand_parameter = format_parameter(
@@ -171,7 +175,7 @@ def hacker(hacker, conf, vms):
         interval = date_range(conf['experiment']['start_date'] + duration * change_number,
                               conf['experiment']['start_date'] + duration * (change_number + 1))
 
-        a = action.action(rand_command.name, get_random_time_in_interval(
+        a = action.Action(rand_command.name, get_random_time_in_interval(
             interval, duration, start_date, change_number), rand_parameter)
         actions += [a]
 

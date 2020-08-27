@@ -23,9 +23,9 @@ def configure(config_file):
 
         services = set()
         for s in conf['network']['services']:
-            tmp = service.service(s['name'])
+            tmp = service.Service(s['name'])
             for c in s['commands']:
-                co = command.command(c['name'])
+                co = command.Command(c['name'])
                 for p in c['parameters']:
                     co.add_parameter(p)
                 tmp.add_command(co)
@@ -35,7 +35,7 @@ def configure(config_file):
 
         attacks = set()
         for c in conf['hacker']['attacks']:
-            co = command.command(c['name'])
+            co = command.Command(c['name'])
             for p in c['parameters']:
                 co.add_parameter(p)
             attacks.add(co)
@@ -95,9 +95,9 @@ def configure(config_file):
 
         services = set()
         for s in conf['network']['services']:
-            tmp = service.service(s['name'])
+            tmp = service.Service(s['name'])
             for c in s['commands']:
-                co = command.command(c['name'])
+                co = command.Command(c['name'])
                 for p in c['parameters']:
                     co.add_parameter(p)
                 tmp.add_command(co)
@@ -133,12 +133,9 @@ if __name__ == '__main__':
         ret = 'vms:'
         i = 0
         for v in vms:
-            ret += '\n\tvm_' + \
-                str(i) + ':' + ''.join(['\n\t\t' +
-                                        line for line in str(v).split('\n')])
+            ret += '\n\tvm_' + str(i) + ':' + ''.join(['\n\t\t' + line for line in str(v).split('\n')])
             i += 1
 
-        ret += '\nhacker:' + ''.join(['\n\t' +
-                                      line for line in str(hacker).split('\n')])
+        ret += '\nhacker:' + ''.join(['\n\t' + line for line in str(hacker).split('\n')])
 
         print(ret)

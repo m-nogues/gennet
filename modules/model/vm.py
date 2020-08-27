@@ -1,7 +1,4 @@
-from modules.model import behavior
-
-
-class vm:
+class Vm:
 
     # Python native methods
     def __init__(self, ip, mac, behavior):
@@ -13,17 +10,17 @@ class vm:
         i = 0
         for service in self.__services:
             ret += '\n\tservice_' + \
-                str(i) + ':' + ''.join(['\n\t\t' + 
-                                        line for line in str(service).split('\n')])
+                   str(i) + ':' + ''.join(['\n\t\t' +
+                                           line for line in str(service).split('\n')])
             i += 1
 
-        ret += '\nbehavior:' + ''.join(['\n\t' + 
+        ret += '\nbehavior:' + ''.join(['\n\t' +
                                         line for line in str(self.__behavior).split('\n')]) + '\nactions:'
         i = 0
         for action in self.__actions:
             ret += '\n\taction_' + \
-                str(i) + ':' + ''.join(['\n\t\t' + 
-                                        line for line in str(action).split('\n')])
+                   str(i) + ':' + ''.join(['\n\t\t' +
+                                           line for line in str(action).split('\n')])
             i += 1
 
         return ret
@@ -97,6 +94,7 @@ class vm:
             'mac': self.__mac,
             'services': ' '.join([service.name for service in self.__services]),
             'behavior': self.__behavior.name,
-            'actions': ';'.join([action.name + ',' + str(action.timestamp) + ',' + action.parameters for action in self.__actions])
+            'actions': ';'.join(
+                [action.name + ',' + str(action.timestamp) + ',' + action.parameters for action in self.__actions])
         }
         return ret
