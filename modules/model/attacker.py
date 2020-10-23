@@ -9,8 +9,8 @@ class Attacker:
         i = 0
         for action in self.__actions:
             ret += '\n\taction_' + \
-                   str(i) + ':' + ''.join(['\n\t\t' +
-                                           line for line in str(action).split('\n')])
+                str(i) + ':' + ''.join(['\n\t\t' +
+                                        line for line in str(action).split('\n')])
             i += 1
 
         return ret
@@ -72,7 +72,6 @@ class Attacker:
         ret = {
             'ip': self.__ip,
             'mac': self.__mac,
-            'actions': ';'.join(
-                [action.name + ',' + str(action.timestamp) + ',' + action.parameters for action in self.__actions])
+            'actions': ';'.join([action.name + ',' + str(action.timestamp) + ',' + action.parameters for action in self.__actions])
         }
         return ret

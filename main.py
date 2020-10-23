@@ -3,7 +3,7 @@ import argparse
 import json
 from datetime import datetime, timedelta
 
-from modules.generators import hacker_generator, vm_generator
+from modules.generators import attacker_generator, vm_generator
 from modules.model import command, service
 
 
@@ -34,12 +34,12 @@ def configure(config_file):
         conf['network']['services'] = services
 
         attacks = set()
-        for c in conf['hacker']['attacks']:
+        for c in conf['attacker']['attacks']:
             co = command.Command(c['name'])
             for p in c['parameters']:
                 co.add_parameter(p)
             attacks.add(co)
-        conf['hacker']['attacks'] = attacks
+        conf['attacker']['attacks'] = attacks
 
         conf['experiment']['start_date'] = datetime.strptime(
             conf['experiment']['start_date'], '%Y-%m-%d %H:%M')
@@ -79,7 +79,7 @@ def configure(config_file):
             'end_date': (datetime.now() + timedelta(7)).strftime('%Y-%m-%d %H:%M'),
             'max_actions_per_vm': 5
         }
-        conf['hacker'] = {
+        conf['attacker'] = {
             "attacks": [
                 {
                     "name": "nmap",
@@ -127,7 +127,7 @@ if __name__ == '__main__':
 
     vms = vm_generator.generate(conf, args.test)
 
-    hacker = hacker_generator.generate(vms, conf, args.test)
+    attacker = attacker_generator.generate(vms, conf, args.test)
 
     if args.test:
         ret = 'vms:'
@@ -136,6 +136,6 @@ if __name__ == '__main__':
             ret += '\n\tvm_' + str(i) + ':' + ''.join(['\n\t\t' + line for line in str(v).split('\n')])
             i += 1
 
-        ret += '\nhacker:' + ''.join(['\n\t' + line for line in str(hacker).split('\n')])
+        ret += '\nattacker:' + ''.join(['\n\t' + line for line in str(attacker).split('\n')])
 
         print(ret)

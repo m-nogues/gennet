@@ -143,12 +143,12 @@ def generate(vm, vms, conf, change_number, index):
     return actions
 
 
-def hacker(hacker, conf, vms):
-    """The action generation for the hacker
+def attacker(attacker, conf, vms):
+    """The action generation for the attacker
     
     Arguments:
-        hacker {hacker} -- The hacker
-        conf {dict} -- The dictionnary containing the configuration parameters
+        attacker {Attacker} -- The attacker
+        conf {dict} -- The dictionary containing the configuration parameters
         vms {list} -- The list of vms in the experiment
     
     Returns:
@@ -161,13 +161,13 @@ def hacker(hacker, conf, vms):
     actions = list()
     number_of_actions = random.randint(
         1, conf['experiment']['max_actions_per_vm']) + 1
-    actions += [action.Action('/usr/local/bin/change_vm', start_date, '/vms/hacker 0')]
+    actions += [action.Action('/usr/local/bin/change_vm', start_date, '/vms/attacker 0')]
 
     while len(actions) < number_of_actions:
         index = random.randint(0, len(vms) - 1)
         rand_vm = vms[index]
         change_number = int(index / conf['network']['number_of_vms'])
-        rand_command = random.sample(hacker.attacks, 1)[0]
+        rand_command = random.sample(attacker.attacks, 1)[0]
 
         rand_parameter = format_parameter(
             random.sample(rand_command.parameters, 1)[0], rand_vm)

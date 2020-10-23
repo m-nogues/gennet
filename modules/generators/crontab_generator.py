@@ -48,12 +48,12 @@ def generate(vms, number_of_vms):
     write_data(crontabs)
 
 
-def hacker(hacker):
-    """Writes the list of actions of the hacker to a crontab on the disk
+def attacker(attacker):
+    """Writes the list of actions of the attacker to a crontab on the disk
     
     Arguments:
-        hacker {hacker} -- The hacker
+        attacker {Attacker} -- The attacker
     """
     crontab = ct.CronTab()
-    gen_cron(hacker.actions, crontab)
-    write_data([crontab], 'crontab_hacker')
+    gen_cron(attacker.actions, crontab)
+    write_data([crontab], 'crontab_attacker')
