@@ -1,17 +1,15 @@
-import random
-
 import pandas as pd
 
 from modules.generators import action_generator, crontab_generator, vm_generator
 from modules.model import attacker
 
 
-def find_ip_and_mac(vms, prefixe):
+def find_ip_and_mac(vms, prefix):
     """Finds a random IP and mac address that is not used by the vms
     
     Arguments:
         vms {list} -- The list of vms to consider
-        prefixe {str} -- The prefixe to use for the IP address
+        prefix {str} -- The prefix to use for the IP address
     
     Returns:
         str,str -- The IP and mac address generated
@@ -21,9 +19,9 @@ def find_ip_and_mac(vms, prefixe):
         ips.add(v.ip)
         macs.add(v.mac)
 
-    ip = vm_generator.rand_ip(prefixe)
+    ip = vm_generator.rand_ip(prefix)
     while ip in ips:
-        ip = vm_generator.rand_ip(prefixe)
+        ip = vm_generator.rand_ip(prefix)
 
     mac = vm_generator.rand_mac()
     while mac in macs:
@@ -41,7 +39,7 @@ def prepare_attacker(conf, vms):
     Returns:
         attacker -- The generated attacker
     """
-    ip, mac = find_ip_and_mac(vms, conf['network']['prefixe'])
+    ip, mac = find_ip_and_mac(vms, conf['network']['prefix'])
     h = attacker.Attacker(ip, mac)
 
     for a in conf['attacker']['attacks']:
@@ -71,8 +69,7 @@ def write_data(h):
 
     keys = list(csv.keys())
     with open('vms/attacker.csv', 'w') as f:
-        df.to_csv(path_or_buf=f, sep=',', index=False,
-                  columns=keys)
+        df.to_csv(path_or_buf=f, sep=',', index=False, columns=keys)
 
     crontab_generator.attacker(h)
 

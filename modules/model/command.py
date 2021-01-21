@@ -5,8 +5,7 @@ class Command:
         self.__name, self.__parameters = name, set()
 
     def __str__(self):
-        ret = 'name:\t' + self.__name + '\nparameters:' + \
-              ''.join(['\n\t' + p for p in self.__parameters])
+        ret = 'name:\t' + self.__name + '\nparameters:' + ''.join(['\n\t' + p for p in self.__parameters])
         return ret
 
     # Attributes

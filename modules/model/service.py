@@ -8,8 +8,7 @@ class Service:
         ret = 'name:\t' + self.__name + '\ncommands:'
         i = 0
         for command in self.__commands:
-            ret += '\n\tcommand_' + str(i) + ':' + ''.join(['\n\t\t' +
-                                                            line for line in str(command).split('\n')])
+            ret += '\n\tcommand_' + str(i) + ':' + ''.join(['\n\t\t' + line for line in str(command).split('\n')])
             i += 1
 
         return ret

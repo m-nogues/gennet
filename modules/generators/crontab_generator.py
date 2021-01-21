@@ -17,8 +17,8 @@ def gen_cron(actions, cron):
         if job.is_valid():
             job.enable()
         else:
-            raise AssertionError('incorrect job from action:' + ''.join(['\n\t\t' +
-                                                                         line for line in str(a).split('\n')]))
+            raise AssertionError('incorrect job from action:' + ''.join(['\n\t\t' + line for line in str(a).split(
+                '\n')]))
 
 
 def write_data(crontabs, name='crontab'):
@@ -28,7 +28,7 @@ def write_data(crontabs, name='crontab'):
         crontabs {list} -- The list of crontabs
     
     Keyword Arguments:
-        name {str} -- The prefixe name of the files (default: {'crontab'})
+        name {str} -- The prefix name of the files (default: {'crontab'})
     """
     for i in range(len(crontabs)):
         crontabs[i].write(filename='vms/' + name + '_' + str(i + 1))

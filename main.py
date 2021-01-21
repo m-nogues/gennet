@@ -14,7 +14,7 @@ def configure(config_file):
         config_file {string} -- The configuration file
 
     Returns:
-        dict -- The dictionnary containing the configuration
+        dict -- The dictionary containing the configuration
     """
     conf = {}
     try:
@@ -41,15 +41,13 @@ def configure(config_file):
             attacks.add(co)
         conf['attacker']['attacks'] = attacks
 
-        conf['experiment']['start_date'] = datetime.strptime(
-            conf['experiment']['start_date'], '%Y-%m-%d %H:%M')
-        conf['experiment']['end_date'] = datetime.strptime(
-            conf['experiment']['end_date'], '%Y-%m-%d %H:%M')
+        conf['experiment']['start_date'] = datetime.strptime(conf['experiment']['start_date'], '%Y-%m-%d %H:%M')
+        conf['experiment']['end_date'] = datetime.strptime(conf['experiment']['end_date'], '%Y-%m-%d %H:%M')
     except:
         conf['network'] = {
             'number_of_vms': 2,
             'number_of_changes': 1,
-            'prefixe': '192.168.10.',
+            'prefix': '192.168.10.',
             'services': [
                 {
                     'name': 'sshd',
@@ -105,10 +103,8 @@ def configure(config_file):
             services.add(tmp)
         conf['network']['services'] = services
 
-        conf['experiment']['start_date'] = datetime.strptime(
-            conf['experiment']['start_date'], '%Y-%m-%d %H:%M')
-        conf['experiment']['end_date'] = datetime.strptime(
-            conf['experiment']['end_date'], '%Y-%m-%d %H:%M')
+        conf['experiment']['start_date'] = datetime.strptime(conf['experiment']['start_date'], '%Y-%m-%d %H:%M')
+        conf['experiment']['end_date'] = datetime.strptime(conf['experiment']['end_date'], '%Y-%m-%d %H:%M')
 
     return conf
 

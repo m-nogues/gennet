@@ -2,25 +2,20 @@ class Vm:
 
     # Python native methods
     def __init__(self, ip, mac, behavior):
-        self.__ip, self.__mac, self.__services, self.__behavior, self.__actions, self.__started = ip, mac, set(
-        ), behavior, set(), False
+        self.__ip, self.__mac, self.__services, self.__behavior, self.__actions, self.__started = ip, mac, set(), \
+                                                                                                  behavior, set(), False
 
     def __str__(self):
         ret = 'ip:\t' + self.__ip + '\nmac:\t' + self.__mac + '\nservices:'
         i = 0
         for service in self.__services:
-            ret += '\n\tservice_' + \
-                   str(i) + ':' + ''.join(['\n\t\t' +
-                                           line for line in str(service).split('\n')])
+            ret += '\n\tservice_' + str(i) + ':' + ''.join(['\n\t\t' + line for line in str(service).split('\n')])
             i += 1
 
-        ret += '\nbehavior:' + ''.join(['\n\t' +
-                                        line for line in str(self.__behavior).split('\n')]) + '\nactions:'
+        ret += '\nbehavior:' + ''.join(['\n\t' + line for line in str(self.__behavior).split('\n')]) + '\nactions:'
         i = 0
         for action in self.__actions:
-            ret += '\n\taction_' + \
-                   str(i) + ':' + ''.join(['\n\t\t' +
-                                           line for line in str(action).split('\n')])
+            ret += '\n\taction_' + str(i) + ':' + ''.join(['\n\t\t' + line for line in str(action).split('\n')])
             i += 1
 
         return ret
@@ -78,7 +73,6 @@ class Vm:
             for service in self.__services:
                 service.start()
             self.__started = True
-        return
 
     def stop(self):
         if self.__started:
@@ -86,7 +80,6 @@ class Vm:
             for service in self.__services:
                 service.stop()
             self.__started = False
-        return
 
     def to_csv(self):
         ret = {

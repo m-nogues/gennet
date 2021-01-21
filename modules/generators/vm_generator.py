@@ -36,30 +36,31 @@ def rand_services(services):
     return ret
 
 
-def rand_ip(prefixe):
-    """Generates a random IP address with the given prefixe
+def rand_ip(prefix):
+    """Generates a random IP address with the given prefix
     
     Arguments:
-        prefixe {str} -- The prefixe for the generated IP address
+        prefix {str} -- The prefix for the generated IP address
     
     Returns:
         str -- The generated IP address
     """
-    return prefixe + str(random.randint(3, 254))
+    return prefix + str(random.randint(3, 254))
 
 
-def gen_rand_ip_and_mac(vms, number_of_vms, prefixe):
-    """Generates a random IP and mac address considering the previously generated couples to keep them in couple if we generate the same IP or mac a second time
+def gen_rand_ip_and_mac(vms, number_of_vms, prefix):
+    """Generates a random IP and mac address considering the previously generated couples to keep them in couple if
+    we generate the same IP or mac a second time
     
     Arguments:
         vms {list} -- The list of previously generated vms
         number_of_vms {int} -- The number of vms
-        prefixe {str} -- The prefixe for the IP address generation
+        prefix {str} -- The prefix for the IP address generation
     
     Returns:
         str,str -- The generated IP and mac address
     """
-    ip = rand_ip(prefixe)
+    ip = rand_ip(prefix)
     mac = rand_mac()
     exists = False
     for v in vms:
@@ -68,25 +69,25 @@ def gen_rand_ip_and_mac(vms, number_of_vms, prefixe):
         elif v.mac == mac:
             ip, exists = v.ip, True
         if int(len(vms) / number_of_vms) == int(vms.index(v) / number_of_vms) and exists:
-            ip, mac = gen_rand_ip_and_mac(vms, number_of_vms, prefixe)
+            ip, mac = gen_rand_ip_and_mac(vms, number_of_vms, prefix)
             break
 
     return ip, mac
 
 
-def gen_vm(vms, number_of_vms, prefixe, services):
+def gen_vm(vms, number_of_vms, prefix, services):
     """Generates a vm
     
     Arguments:
         vms {list} -- The list of the vms
         number_of_vms {int} -- The number of physical vms
-        prefixe {str} -- The prefixe for the IP address generation
+        prefix {str} -- The prefix for the IP address generation
         services {set} -- The set of services
     
     Returns:
         vm -- The generated vm
     """
-    ip, mac = gen_rand_ip_and_mac(vms, number_of_vms, prefixe)
+    ip, mac = gen_rand_ip_and_mac(vms, number_of_vms, prefix)
 
     v = vm.Vm(ip, mac, behavior.Behavior(ip + '/' + mac, services))
     for s in rand_services(services):
@@ -109,15 +110,12 @@ def prepare_vms(conf):
 
     number_of_vms = conf['network']['number_of_vms']
     for _ in range(conf['network']['number_of_changes'] * number_of_vms):
-        vms += [gen_vm(vms, number_of_vms, conf['network']['prefixe'], services)]
+        vms += [gen_vm(vms, number_of_vms, conf['network']['prefix'], services)]
 
     i = 0
     change_number = 0
     for v in vms:
-        start = (
-            0 if change_number == 0
-            else change_number * number_of_vms
-        )
+        start = (0 if change_number == 0 else change_number * number_of_vms)
         end = (
             ((change_number + 1) * number_of_vms) if ((change_number + 1) * number_of_vms) < len(vms)
             else len(vms)

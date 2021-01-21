@@ -33,15 +33,9 @@ def get_random_time_in_interval(interval, duration, start_date, change_number):
     Returns:
         datetime -- The chosen date, hour and minute
     """
-    ret = random.choice(interval).replace(
-        hour=random.randint(0, 23),
-        minute=random.randint(0, 59)
-    )
+    ret = random.choice(interval).replace(hour=random.randint(0, 23), minute=random.randint(0, 59))
     while ret > start_date + duration * (change_number + 1) or ret < start_date + duration * change_number:
-        ret = random.choice(interval).replace(
-            hour=random.randint(0, 23),
-            minute=random.randint(0, 59)
-        )
+        ret = random.choice(interval).replace(hour=random.randint(0, 23), minute=random.randint(0, 59))
 
     return ret
 
@@ -54,7 +48,7 @@ def format_parameter(parameter, vm):
         vm {vm} -- The VM targeted by the command
     
     Returns:
-        string -- The formated parameter
+        string -- The formatted parameter
     """
     ret = parameter.replace('&ip', vm.ip).replace('&mac', vm.mac)
     return ret
@@ -74,11 +68,9 @@ def get_random_action(vms, interval, duration, start_date, change_number):
         action -- The chosen action
     """
     rand_vm = random.choice(vms)
-    rand_command = random.sample(random.sample(
-        rand_vm.services, 1)[0].commands, 1)[0]
+    rand_command = random.sample(random.sample(rand_vm.services, 1)[0].commands, 1)[0]
 
-    rand_parameter = format_parameter(
-        random.sample(rand_command.parameters, 1)[0], rand_vm)
+    rand_parameter = format_parameter(random.sample(rand_command.parameters, 1)[0], rand_vm)
 
     return action.Action(rand_command.name, get_random_time_in_interval(interval, duration, start_date, change_number),
                          rand_parameter)
@@ -101,14 +93,11 @@ def prepare_actions(vms, interval, max_actions, duration, start_date, change_num
     """
     actions = list()
 
-    number_of_actions = random.randint(
-        1, max_actions)
+    number_of_actions = random.randint(1, max_actions)
     while len(actions) < number_of_actions:
-        actions += [get_random_action(vms, interval,
-                                      duration, start_date, change_number)]
+        actions += [get_random_action(vms, interval, duration, start_date, change_number)]
 
-    actions += [action.Action('/usr/local/bin/change_vm', start_date +
-                              duration * change_number,
+    actions += [action.Action('/usr/local/bin/change_vm', start_date + duration * change_number,
                               '/vms/vm_' + str(((index + len(vms) + 1) % (len(vms) + 1)) + 1) + ' ' + str(
                                   change_number))]
 
@@ -121,15 +110,15 @@ def generate(vm, vms, conf, change_number, index):
     Arguments:
         vm {vm} -- The vm for which to generate the actions
         vms {list} -- The list of vms in the configuration group
-        conf {dict} -- The dictionnary containing the configuration parameters
+        conf {dict} -- The dictionary containing the configuration parameters
         change_number {int} -- The number of the configuration group
         index {int} -- The index of the vm for which we generate the actions
     
     Returns:
         list -- The list of generated actions
     """
-    duration = (conf['experiment']['end_date'] - conf['experiment']
-    ['start_date']) / conf['network']['number_of_changes']
+    duration = (conf['experiment']['end_date'] - conf['experiment']['start_date']) / conf['network'][
+        'number_of_changes']
 
     interval = date_range(conf['experiment']['start_date'] + duration * change_number,
                           conf['experiment']['start_date'] + duration * (change_number + 1))
@@ -159,8 +148,7 @@ def attacker(attacker, conf, vms):
     duration = (end_date - start_date) / conf['network']['number_of_changes']
 
     actions = list()
-    number_of_actions = random.randint(
-        1, conf['experiment']['max_actions_per_vm']) + 1
+    number_of_actions = random.randint(1, conf['experiment']['max_actions_per_vm']) + 1
     actions += [action.Action('/usr/local/bin/change_vm', start_date, '/vms/attacker 0')]
 
     while len(actions) < number_of_actions:
