@@ -22,8 +22,8 @@ class Behavior:
     def bias(self): return self.__bias
 
     def change_bias(self, key, value):
-        if not isinstance(value, float) or value > 1.0 or value < 0.0:
-            raise TypeError('value must be between 0.0 and 1.0')
+        if not isinstance(value, float) or value > 1.0 or value < 0.0 or sum(self.bias.value()) > 1.0:
+            raise TypeError('value must be between 0.0 and 1.0 and total must be less than 1.0')
         if key in self.__bias:
             self.__bias[key] = value
         else:
