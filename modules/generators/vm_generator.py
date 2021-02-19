@@ -75,7 +75,7 @@ def gen_rand_ip_and_mac(vms, number_of_vms, prefix):
     return ip, mac
 
 
-def gen_vm(vms, number_of_vms, prefix, services):
+def gen_vm(vms, number_of_vms, prefix, services, squeleton):
     """Generates a vm
     
     Arguments:
@@ -108,9 +108,9 @@ def prepare_vms(conf):
     services = conf['network']['services']
     vms = list()
 
-    number_of_vms = conf['network']['number_of_vms']
+    number_of_vms = len(conf['network']['vms'])
     for _ in range(conf['network']['number_of_changes'] * number_of_vms):
-        vms += [gen_vm(vms, number_of_vms, conf['network']['prefix'], services)]
+        vms += [gen_vm(vms, number_of_vms, conf['network']['prefix'], services, conf['network']['vms'])]
 
     i = 0
     change_number = 0
@@ -181,14 +181,14 @@ def generate(conf, test):
     Returns:
         list -- The list of vms
     """
-    if conf['network']['number_of_vms'] < 2:
+    if len(conf['network']['vms']) < 2:
         raise ValueError('number_of_vms cannot be less than 2')
-    if conf['network']['number_of_vms'] > 252:
+    if len(conf['network']['vms']) > 252:
         raise ValueError('cannot have more machines than there is ip in range')
 
     vms = prepare_vms(conf)
 
     if not test:
-        write_data(vms, conf['network']['number_of_vms'])
+        write_data(vms, len(conf['network']['vms']))
 
     return vms

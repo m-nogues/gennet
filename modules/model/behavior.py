@@ -1,8 +1,14 @@
 class Behavior:
 
     # Python native methods
-    def __init__(self, name, services):
+    def __init__(self, name, services, role):
         self.__name, self.__bias = name, dict()
+
+        try:
+            self.__bias = getattr(Behavior, role)(services)
+        except AttributeError:
+            print("Behavior for `{}` is not implemented".format(role))
+
         for s in services:
             self.__bias[s.name] = 1 / len(services)
 
@@ -36,3 +42,15 @@ class Behavior:
             raise KeyError(key + ' is not a valid service')
 
     # Useful methods
+    def user(self, services):
+        user = dict()
+        for s in services:
+            if 'http' in s.name:
+                user[s.name] = .75
+            elif 'ftp' in s.name:
+                user[s.name] = .125
+            elif 'ssh' in s.name:
+                user[s.name] = .125
+        while sum(user.values()) != 1:
+            user.popitem()
+        return user

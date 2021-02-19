@@ -45,7 +45,11 @@ def configure(config_file):
         conf['experiment']['end_date'] = datetime.strptime(conf['experiment']['end_date'], '%Y-%m-%d %H:%M')
     except:
         conf['network'] = {
-            'number_of_vms': 2,
+            'vms': [
+                {'behavior': 'user', 'services': ['ftpd']},
+                {'behavior': 'server', 'services': ['sshd', 'ftpd', 'httpd']},
+                {'behavior': 'admin', 'services': []}
+            ],
             'number_of_changes': 1,
             'prefix': '192.168.10.',
             'services': [
