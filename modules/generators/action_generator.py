@@ -54,7 +54,7 @@ def format_parameter(parameter, vm):
     return ret
 
 
-def get_random_action(vms, interval, duration, start_date, change_number):
+def get_random_action(vms, interval, duration, start_date, change_number, behavior):
     """Get a random action chosen in the range of possible actions
     
     Arguments:
@@ -63,20 +63,34 @@ def get_random_action(vms, interval, duration, start_date, change_number):
         duration {timedelta} -- The duration of a configuration group
         start_date {datetime} -- The start date of the configuration group
         change_number {int} -- The number of the configuration group
-    
+        behavior {behavior} -- The behavior of the VM performing the actions
+
     Returns:
         action -- The chosen action
     """
-    rand_vm = random.choice(vms)
-    rand_command = random.sample(random.sample(rand_vm.services, 1)[0].commands, 1)[0]
+    # Choose biased service and command to use
+    total_bias = 0
+    biased_list = list()
+    for service, bias in behavior:
+        total_bias += bias
+        biased_list += [service for _ in range(bias * 100)]
 
+    rand_service = random.sample(biased_list, 1)[0]
+    rand_command = random.sample(rand_service.commands, 1)[0]
+
+    # Choose random VM to perform action on
+    rand_vm = random.choice(vms)
+    while rand_service not in rand_vm.service:
+        rand_vm = random.choice(vms)
+
+    # Choose parameter on variable parameter commands
     rand_parameter = format_parameter(random.sample(rand_command.parameters, 1)[0], rand_vm)
 
     return action.Action(rand_command.name, get_random_time_in_interval(interval, duration, start_date, change_number),
                          rand_parameter)
 
 
-def prepare_actions(vms, interval, max_actions, duration, start_date, change_number, index):
+def prepare_actions(vms, interval, max_actions, duration, start_date, change_number, index, behavior):
     """Generates a list of action for a vm of a configuration group
     
     Arguments:
@@ -87,6 +101,7 @@ def prepare_actions(vms, interval, max_actions, duration, start_date, change_num
         start_date {datetime} -- The start of the configuration group
         change_number {int} -- The number of the configuration group
         index {int} -- The index in the list of vms representing the vm for which we are generating the actions
+        behavior {behavior} -- The behavior of the VM performing the actions
     
     Returns:
         list -- The list of generated actions
@@ -95,7 +110,7 @@ def prepare_actions(vms, interval, max_actions, duration, start_date, change_num
 
     number_of_actions = random.randint(1, max_actions)
     while len(actions) < number_of_actions:
-        actions += [get_random_action(vms, interval, duration, start_date, change_number)]
+        actions += [get_random_action(vms, interval, duration, start_date, change_number, behavior)]
 
     actions += [action.Action('/usr/local/bin/change_vm', start_date + duration * change_number,
                               '/vms/vm_' + str(((index + len(vms) + 1) % (len(vms) + 1)) + 1) + ' ' + str(
@@ -127,7 +142,7 @@ def generate(vm, vms, conf, change_number, index):
 
     actions = prepare_actions(
         vms, interval, conf['experiment']['max_actions_per_vm'], duration, conf['experiment']['start_date'],
-        change_number, index)
+        change_number, index, vm.behavior)
 
     return actions
 
