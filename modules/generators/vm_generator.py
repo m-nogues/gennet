@@ -75,7 +75,7 @@ def gen_rand_ip_and_mac(vms, number_of_vms, prefix):
     return ip, mac
 
 
-def gen_vm(vms, number_of_vms, prefix, services, squeleton):
+def gen_vm(vms, number_of_vms, prefix, services, skeleton):
     """Generates a vm
     
     Arguments:
@@ -89,9 +89,10 @@ def gen_vm(vms, number_of_vms, prefix, services, squeleton):
     """
     ip, mac = gen_rand_ip_and_mac(vms, number_of_vms, prefix)
 
-    v = vm.Vm(ip, mac, behavior.Behavior(ip + '/' + mac, services))
-    for s in rand_services(services):
-        v.add_service(s)
+    v = vm.Vm(ip, mac, behavior.Behavior(ip + '/' + mac, services, skeleton['behavior'], skeleton['max_actions']))
+    for s in services:
+        if s.name in skeleton['services']:
+            v.add_service(s)
 
     return v
 
@@ -109,8 +110,8 @@ def prepare_vms(conf):
     vms = list()
 
     number_of_vms = len(conf['network']['vms'])
-    for _ in range(conf['network']['number_of_changes'] * number_of_vms):
-        vms += [gen_vm(vms, number_of_vms, conf['network']['prefix'], services, conf['network']['vms'])]
+    for i in range(conf['network']['number_of_changes'] * number_of_vms):
+        vms += [gen_vm(vms, number_of_vms, conf['network']['prefix'], services, conf['network']['vms'][i % number_of_vms])]
 
     i = 0
     change_number = 0

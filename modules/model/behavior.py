@@ -1,16 +1,30 @@
+import json
+from copy import deepcopy
+
+
+def load_bias(role, services):
+    bias = dict()
+    with open('conf/' + role + '.json', 'r') as f:
+        tmp = json.load(f)
+        for s in services:
+            if s.name in tmp.keys():
+                bias[s.name] = tmp[s.name]
+        total = sum(bias.values())
+        for k, v in bias:
+            bias[k] = v / total
+    return bias
+
+
 class Behavior:
 
     # Python native methods
-    def __init__(self, name, services, role):
-        self.__name, self.__bias = name, dict()
+    def __init__(self, name, services, role, max_actions):
+        self.__name, self.__bias, self.__max_actions = name, dict(), max_actions
 
         try:
-            self.__bias = getattr(Behavior, role)(services)
-        except AttributeError:
-            print("Behavior for `{}` is not implemented".format(role))
-
-        for s in services:
-            self.__bias[s.name] = 1 / len(services)
+            self.__bias = load_bias(role, services)
+        except OSError:
+            print("Behavior for `{}` is not configured".format(role))
 
     def __str__(self):
         ret = 'name:\t' + self.__name + '\nbias:'
@@ -25,7 +39,10 @@ class Behavior:
     def name(self): return self.__name
 
     @property
-    def bias(self): return self.__bias
+    def bias(self): return deepcopy(self.__bias)
+
+    @property
+    def max_actions(self): return self.__max_actions
 
     def change_bias(self, key, value):
         if not isinstance(value, float) or value > 1.0 or value < 0.0 or sum(self.bias.value()) > 1.0:
@@ -40,15 +57,3 @@ class Behavior:
             return self.__bias[key]
         else:
             raise KeyError(key + ' is not a valid service')
-
-    # Useful methods
-    def user(self, services):
-        user = dict()
-        for s in services:
-            if 'http' in s.name:
-                user[s.name] = .75
-            elif 'ftp' in s.name:
-                user[s.name] = .125
-            elif 'ssh' in s.name:
-                user[s.name] = .125
-        return user

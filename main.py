@@ -7,6 +7,31 @@ from modules.generators import attacker_generator, vm_generator
 from modules.model import command, service
 
 
+def convert_to_objects(conf):
+    services = set()
+    for s in conf['network']['services']:
+        tmp = service.Service(s['name'])
+        for c in s['commands']:
+            co = command.Command(c['name'])
+            for p in c['parameters']:
+                co.add_parameter(p)
+            tmp.add_command(co)
+
+        services.add(tmp)
+    conf['network']['services'] = services
+
+    attacks = set()
+    for c in conf['attacker']['attacks']:
+        co = command.Command(c['name'])
+        for p in c['parameters']:
+            co.add_parameter(p)
+        attacks.add(co)
+    conf['attacker']['attacks'] = attacks
+
+    conf['experiment']['start_date'] = datetime.strptime(conf['experiment']['start_date'], '%Y-%m-%d %H:%M')
+    conf['experiment']['end_date'] = datetime.strptime(conf['experiment']['end_date'], '%Y-%m-%d %H:%M')
+
+
 def configure(config_file):
     """Read the configuration file or creates the default one if it does not exist.
 
@@ -21,34 +46,12 @@ def configure(config_file):
         with open(config_file, 'r') as f:
             conf = json.load(f)
 
-        services = set()
-        for s in conf['network']['services']:
-            tmp = service.Service(s['name'])
-            for c in s['commands']:
-                co = command.Command(c['name'])
-                for p in c['parameters']:
-                    co.add_parameter(p)
-                tmp.add_command(co)
-
-            services.add(tmp)
-        conf['network']['services'] = services
-
-        attacks = set()
-        for c in conf['attacker']['attacks']:
-            co = command.Command(c['name'])
-            for p in c['parameters']:
-                co.add_parameter(p)
-            attacks.add(co)
-        conf['attacker']['attacks'] = attacks
-
-        conf['experiment']['start_date'] = datetime.strptime(conf['experiment']['start_date'], '%Y-%m-%d %H:%M')
-        conf['experiment']['end_date'] = datetime.strptime(conf['experiment']['end_date'], '%Y-%m-%d %H:%M')
-    except:
+    except OSError:
         conf['network'] = {
             'vms': [
-                {'behavior': 'user', 'services': ['ftpd']},
-                {'behavior': 'server', 'services': ['sshd', 'ftpd', 'httpd']},
-                {'behavior': 'admin', 'services': []}
+                {'behavior': 'user', 'services': ['ftpd'], 'max_actions': 5000},
+                {'behavior': 'server', 'services': ['sshd', 'ftpd', 'httpd'], 'max_actions': 0},
+                {'behavior': 'admin', 'services': ['sshd'], 'max_actions': 2500}
             ],
             'number_of_changes': 1,
             'prefix': '192.168.10.',
@@ -78,8 +81,7 @@ def configure(config_file):
         }
         conf['experiment'] = {
             'start_date': datetime.now().strftime('%Y-%m-%d %H:%M'),
-            'end_date': (datetime.now() + timedelta(7)).strftime('%Y-%m-%d %H:%M'),
-            'max_actions_per_vm': 5
+            'end_date': (datetime.now() + timedelta(7)).strftime('%Y-%m-%d %H:%M')
         }
         conf['attacker'] = {
             "attacks": [
@@ -95,28 +97,14 @@ def configure(config_file):
         with open(config_file, 'w') as f:
             json.dump(conf, f)
 
-        services = set()
-        for s in conf['network']['services']:
-            tmp = service.Service(s['name'])
-            for c in s['commands']:
-                co = command.Command(c['name'])
-                for p in c['parameters']:
-                    co.add_parameter(p)
-                tmp.add_command(co)
-
-            services.add(tmp)
-        conf['network']['services'] = services
-
-        conf['experiment']['start_date'] = datetime.strptime(conf['experiment']['start_date'], '%Y-%m-%d %H:%M')
-        conf['experiment']['end_date'] = datetime.strptime(conf['experiment']['end_date'], '%Y-%m-%d %H:%M')
-
+    convert_to_objects(conf)
     return conf
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Python framework for an easy creation of a network model for scientific pcap creation.')
-    parser.add_argument('-c', '--conf', nargs='?', default='config.json',
+    parser.add_argument('-c', '--conf', nargs='?', default='conf/config.json',
                         help='specify an alternative configuration file')
     parser.add_argument('-t', '--test', action='store_true',
                         help='allows to run the framework without writing the outputs')
