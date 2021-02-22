@@ -51,6 +51,4 @@ class Behavior:
                 user[s.name] = .125
             elif 'ssh' in s.name:
                 user[s.name] = .125
-        while sum(user.values()) != 1:
-            user.popitem()
         return user
