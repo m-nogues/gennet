@@ -80,10 +80,11 @@ def configure(config_file):
             ]
         }
         conf['experiment'] = {
-            'start_date': datetime.now().strftime('%Y-%m-%d %H:%M'),
-            'end_date': (datetime.now() + timedelta(7)).strftime('%Y-%m-%d %H:%M')
+            'start_date': (datetime.now() + timedelta(1)).strftime('%Y-%m-%d %H:%M'),
+            'end_date': (datetime.now() + timedelta(8)).strftime('%Y-%m-%d %H:%M')
         }
         conf['attacker'] = {
+            "max_actions": 500,
             "attacks": [
                 {
                     "name": "nmap",
@@ -95,7 +96,7 @@ def configure(config_file):
         }
 
         with open(config_file, 'w') as f:
-            json.dump(conf, f)
+            json.dump(conf, f, indent='\t')
 
     convert_to_objects(conf)
     return conf

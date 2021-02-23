@@ -1,5 +1,5 @@
 {
   "httpd": 0.0,
-  "proftpd": 0.0,
+  "ftpd": 0.0,
   "sshd": 0.0
 }

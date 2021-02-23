@@ -68,22 +68,27 @@ def get_random_action(vms, interval, duration, start_date, change_number, behavi
     Returns:
         action -- The chosen action
     """
-    # Choose biased service and command to use
-    total_bias = 0
+    # Choose biased service
     biased_list = list()
-    for service, bias in behavior:
-        total_bias += bias
-        biased_list += [service for _ in range(bias * 100)]
+    for service, bias in behavior.bias.items():
+        biased_list += [service for _ in range(int(bias * 100))]
 
     rand_service = random.sample(biased_list, 1)[0]
-    rand_command = random.sample(rand_service.commands, 1)[0]
 
     # Choose random VM to perform action on
     rand_vm = random.choice(vms)
-    while rand_service not in rand_vm.service:
-        rand_vm = random.choice(vms)
+    while True:
+        for s in rand_vm.services:
+            if rand_service in s.name:
+                rand_service = s
+                break
+        else:
+            rand_vm = random.choice(vms)
+            continue
+        break
 
-    # Choose parameter on variable parameter commands
+    # Choose random command and parameters
+    rand_command = random.sample(rand_service.commands, 1)[0]
     rand_parameter = format_parameter(random.sample(rand_command.parameters, 1)[0], rand_vm)
 
     return action.Action(rand_command.name, get_random_time_in_interval(interval, duration, start_date, change_number),
@@ -137,11 +142,11 @@ def generate(vm, vms, conf, change_number, index):
 
     interval = date_range(conf['experiment']['start_date'] + duration * change_number,
                           conf['experiment']['start_date'] + duration * (change_number + 1))
-
+    i = vms.index(vm)
     vms.remove(vm)
 
     actions = prepare_actions(
-        vms, interval, conf['experiment']['max_actions_per_vm'], duration, conf['experiment']['start_date'],
+        vms, interval, conf['network']['vms'][i]['max_actions'], duration, conf['experiment']['start_date'],
         change_number, index, vm.behavior)
 
     return actions
@@ -163,13 +168,13 @@ def attacker(attacker, conf, vms):
     duration = (end_date - start_date) / conf['network']['number_of_changes']
 
     actions = list()
-    number_of_actions = random.randint(1, conf['experiment']['max_actions_per_vm']) + 1
+    number_of_actions = random.randint(1, conf['attacker']['max_actions'])
     actions += [action.Action('/usr/local/bin/change_vm', start_date, '/vms/attacker 0')]
 
     while len(actions) < number_of_actions:
         index = random.randint(0, len(vms) - 1)
         rand_vm = vms[index]
-        change_number = int(index / conf['network']['number_of_vms'])
+        change_number = int(index / len(conf['network']['vms']))
         rand_command = random.sample(attacker.attacks, 1)[0]
 
         rand_parameter = format_parameter(

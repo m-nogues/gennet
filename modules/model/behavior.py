@@ -6,12 +6,17 @@ def load_bias(role, services):
     bias = dict()
     with open('conf/' + role + '.json', 'r') as f:
         tmp = json.load(f)
-        for s in services:
-            if s.name in tmp.keys():
-                bias[s.name] = tmp[s.name]
-        total = sum(bias.values())
-        for k, v in bias:
-            bias[k] = v / total
+
+    for s in services:
+        if s.name in tmp.keys():
+            bias[s.name] = tmp[s.name]
+
+    total = sum(bias.values())
+    if total == 0.0:
+        total = 1.0
+
+    for k, v in bias.items():
+        bias[k] = v / total
     return bias
 
 

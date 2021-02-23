@@ -1,3 +1,4 @@
+import os
 import random
 
 import pandas as pd
@@ -89,11 +90,11 @@ def gen_vm(vms, number_of_vms, prefix, services, skeleton):
     """
     ip, mac = gen_rand_ip_and_mac(vms, number_of_vms, prefix)
 
-    v = vm.Vm(ip, mac, behavior.Behavior(ip + '/' + mac, services, skeleton['behavior'], skeleton['max_actions']))
+    v = vm.Vm(ip, mac, behavior.Behavior(ip + ' - ' + skeleton['behavior'], services, skeleton['behavior'],
+                                         skeleton['max_actions']))
     for s in services:
         if s.name in skeleton['services']:
             v.add_service(s)
-
     return v
 
 
@@ -116,6 +117,8 @@ def prepare_vms(conf):
     i = 0
     change_number = 0
     for v in vms:
+        if 'server' in v.behavior.name:
+            continue
         start = (0 if change_number == 0 else change_number * number_of_vms)
         end = (
             ((change_number + 1) * number_of_vms) if ((change_number + 1) * number_of_vms) < len(vms)
@@ -154,6 +157,7 @@ def write_data(vms, number_of_vms):
     df = pd.DataFrame(data=csv)
 
     keys = list(csv.keys())
+    os.makedirs('vms/', exist_ok=True)
     with open('vms/vms_list.csv', 'w') as f:
         df.to_csv(path_or_buf=f, sep=',', index=False,
                   columns=keys)
