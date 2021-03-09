@@ -88,7 +88,11 @@ def gen_vm(vms, number_of_vms, prefix, services, skeleton):
     Returns:
         vm -- The generated vm
     """
+    ## TODO
     ip, mac = gen_rand_ip_and_mac(vms, number_of_vms, prefix)
+
+    if 'ip' in skeleton:
+        ip = skeleton['ip']
 
     v = vm.Vm(ip, mac, behavior.Behavior(ip + ' - ' + skeleton['behavior'], services, skeleton['behavior'],
                                          skeleton['max_actions']))
